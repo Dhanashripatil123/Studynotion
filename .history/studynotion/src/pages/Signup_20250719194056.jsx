@@ -1,0 +1,98 @@
+import { useState } from "react";
+
+const tabsName = [
+     "Signup",
+     "login"
+]   
+
+const Signup = ()=>{
+        const [currentTab,setCurrentTab] = useState(tabsName[0]); 
+       
+
+       return(
+              <div className="w-50%">
+              <div className=" w-50% text-justify ml-15 mt-5 ">
+                     <p className="text-white text-3xl w-50% ">
+                        Join the millions learning to 
+                         <p> code with StudyNotion for free</p>
+                     </p>
+                     <p className="text-[#383a3c]">
+                       Build skills for today, tomorrow, and beyond.
+                     </p>
+                     <p className="text-[#3EBEFF]  font-poppins">
+                        Education to future-proof your career.
+                     </p>
+                   
+
+                      {/* <div className="flex flex-row rounded-full  bg-[#3f4757] mb-5 border-[#AFB2BF] px-1 py-1 ">
+                  {   
+                  tabsName.map((element,index) => {
+                       return(
+                             <div
+                    key={index}
+                                  
+                                  
+                                   
+                             >
+                                   {element}
+                      </div>
+                  )})
+                
+               }
+               </div>   */}
+
+               <div className="flex flex-row gap-8">
+                  <p className="flex flex-col">
+                     <p className="text-white">first Name</p> 
+                      <input
+                         type="text"
+                         placeholder="Enter the First Name"
+                         class="w-1xl px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
+                      />
+                  </p>
+                  <p className="flex flex-col">
+                     <p className="text-white">last Name</p> 
+                      <input
+                         type="text"
+                         placeholder="Enter the last Name"
+                         class="w-1xl px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
+                      /> 
+                  </p>
+                  
+                 
+               </div>
+
+                <p className="text-white">Email Adress</p>
+                <input
+                   type="text"
+                   placeholder="Enter the email address"
+                   class="w-3xl px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
+                /> 
+                
+                <div className="flex flex-row gap-8">
+                   <p className="flex flex-col">
+                      <p className="text-white">Create Password</p>
+                      <input
+                         type="text"
+                         placeholder="Enter the password"
+                         class="w-1xl px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
+                      />
+                   </p>
+                   <p className="flex flex-col">
+                      <p className="text-white">Confirm Password</p>
+                      <input
+                         type="text"
+                         placeholder="Enter the l"
+                         class="w-1xl px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
+                      />
+                   </p>
+
+
+                </div>
+
+             </div>
+               </div> 
+                             
+  )}     
+
+export default Signup

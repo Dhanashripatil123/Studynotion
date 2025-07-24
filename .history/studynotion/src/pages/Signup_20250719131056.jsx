@@ -1,0 +1,19 @@
+const Signup = ()=>{
+       return(
+              <div className="w-50%">
+                                                                                                           <div className=" w-50% text-align ">
+                     <p className="text-white text-3xl w-50%">
+                        Join the millions learning to code with StudyNotion for free
+                     </p>
+                     <p className="text-white">
+                       Build skills for today, tomorrow, and beyond.
+                     </p>
+                     <p className="text-white">
+                        Education to future-proof your career.
+                     </p>
+                </div>
+              </div>                         
+       )                                           
+}
+
+export default Signup
