@@ -1,169 +1,213 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import group_study from "../assets/Images/group_study.webp"
+import group_study from "../assets/Images/group_study.webp";
+import { sendOtp } from "../services/operations/authAPI";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { setSignupData } from "../slices/authSlice";
 
-const tabsName = [
-     "Signup",
-     "login"
-]   
+const tabsName = ["Signup", "Login"];
 
-const Signup = ()=>{
+const Signup = () => {
+   const dispatch = useDispatch();
+   const navigate = useNavigate();
+
    const [showPassword, setShowPassword] = useState(false);
    const [showConfirm, setShowConfirm] = useState(false);
-   const [password, setPassword] = useState("");
-   const [confirmPassword, setConfirmPassword] = useState("");
    const [error, setError] = useState("");
+   const [formData, setFormData] = useState({
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      accountType: "Student",
+   });
 
-   
+   const { firstName, lastName, email, password, confirmPassword, accountType } = formData;
 
-   const handleSignup = () => {
+   const handleOnChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prevData) => ({
+         ...prevData,
+         [name]: value,
+      }));
+   };
+
+   const handleSignup = (e) => {
+      e.preventDefault();
+
       if (password !== confirmPassword) {
-         setError("Passwords do not match")
-      } else {
-         setError("");
-         alert("Signup successful ✅")
+         setError("Passwords do not match");
+         return;
       }
-   }
 
-       
+      setError("");
+      const signupPayload = {
+         accountType:accountType,
+         firstName,
+         lastName,
+         email,
+         password,
+         confirmPassword,
+      };
+      console.log(signupPayload);
+      
+      dispatch(setSignupData(signupPayload));
+      dispatch(sendOtp(email));
+      navigate("/verify-email");
+   };
 
-       return(
-              <div className="w-50% flex flex-row gap-70 items-center mt-26">
-              <div className=" w-50% text-justify ml-15 mt-5 gap-9">
-               <div>
-                     <p className="text-white text-2xl font-semibold w-50%  ">
-                        Join the millions learning to 
-                         <p> code with StudyNotion for free</p>
-                     </p>
-                </div>
-                     <br></br>
-                     <p className="text-[#383a3c] ">
-                       Build skills for today, tomorrow, and beyond.
-                     </p>
-                     <p className="text-[#3EBEFF]  font-poppins">
-                        Education to future-proof your career.
-                     </p>
-                   
-                   <br></br>
+   return (
+      <div className="flex flex-row gap-10 items-start mt-10">
+         {/* Left Section */}
+         <div className="w-1/2 ml-10">
+            <p className="text-white text-2xl font-semibold">
+               Join the millions learning to <br /> code with StudyNotion for free
+            </p>
+            <p className="text-[#383a3c] mt-2">
+               Build skills for today, tomorrow, and beyond.
+            </p>
+            <p className="text-[#3EBEFF] font-poppins mt-1">
+               Education to future-proof your career.
+            </p>
 
-                      {<div className="flex flex-row rounded-full  bg-[#3f4757] mb-5 border-[#AFB2BF] px-1 py-1 ">
-                  {   
-                  tabsName.map((element,index) => {
-                       return(
-                             <div
-                    key={index}
-                                  
-                                  
-                                   
-                             >
-                                   {element}
-                      </div>
-                  )})
-                
-               }
-               </div>}
+         
+            
 
-                <div className="gap-y-72">
-               <div className="flex flex-row gap-x-3">
-                  <p className="flex flex-col">
-                     <p className="text-white">first Name</p> 
-                      <input
-                         type="text"
-                         placeholder="Enter the First Name"
-                         class="w-1xl px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
-                      />
-                  </p>
-                  <p className="flex flex-col">
-                     <p className="text-white">last Name</p> 
-                      <input
-                         type="text"
-                         placeholder="Enter the last Name"
-                         class="w-1xl px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
-                      /> 
-                  </p>
-                  
-                 
+            {/* Form */}
+            <form onSubmit={handleSignup} className="mt-6 space-y-4">
+               {/* Account Type Radio Buttons */}
+               <div className="flex gap-6 text-white">
+                  <label className="flex items-center gap-2">
+                     <input
+                        type="radio"
+                        name="accountType"
+                        value="Student"
+                        checked={accountType === "Student"}
+                        onChange={handleOnChange}
+                     />
+                     Student
+                  </label>
+                  <label className="flex items-center gap-2">
+                     <input
+                        type="radio"
+                        name="accountType"
+                        value="Instructor"
+                        checked={accountType === "Instructor"}
+                        onChange={handleOnChange}
+                     />
+                     Instructor
+                  </label>
                </div>
 
-                <p className="text-white mt-4">Email Adress</p>
-                <input
-                   type="text"
-                   placeholder="Enter the email address"
-                   class="w-full px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
-                /> 
-                
-                <div className="flex flex-row gap-8 mt-4">
-               
-                   <p className="flex flex-col">
-                      <p className="text-white">Create Password</p>
-                      <input
-                         type={showPassword ? "text":"password"}
-                         placeholder="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
-                        
-                      />
-                      <span
-                         onClick={() => setShowPassword((prev) => !prev)}
-                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
-                      >
-                         {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </span>
-                      
-                   </p>
+               {/* Name Fields */}
+               <div className="flex gap-4">
+                  <label className="flex flex-col w-1/2">
+                     <span className="text-white">First Name</span>
+                     <input
+                        type="text"
+                        name="firstName"
+                        value={firstName}
+                        onChange={handleOnChange}
+                        placeholder="Enter your first name"
+                        className="px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 rounded-2xl"
+                        required
+                     />
+                  </label>
 
-                   <p className="flex flex-col">
-                      <p className="text-white">Confirm Password </p>
-                      <input
-                         type={showConfirm ? "text":"password"}
-                         placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
-                         
-                      />
-                      <span
-                         onClick={() => setShowConfirm((prev) => !prev)}
-                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
-                      >
-                         {showConfirm ? <FaEyeSlash /> : <FaEye />}
-                      </span>
+                  <label className="flex flex-col w-1/2">
+                     <span className="text-white">Last Name</span>
+                     <input
+                        type="text"
+                        name="lastName"
+                        value={lastName}
+                        onChange={handleOnChange}
+                        placeholder="Enter your last name"
+                        className="px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 rounded-2xl"
+                        required
+                     />
+                  </label>
+               </div>
 
-                            {error && (
-                               <p className="text-red-500 text-sm mt-2 font-semibold">{error}</p>
-                            )}
+               {/* Email */}
+               <label className="flex flex-col">
+                  <span className="text-white">Email Address</span>
+                  <input
+                     type="email"
+                     name="email"
+                     value={email}
+                     onChange={handleOnChange}
+                     placeholder="Enter your email"
+                     className="px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 rounded-2xl"
+                     required
+                  />
+               </label>
 
+               {/* Password Fields */}
+               <div className="flex gap-4 relative">
+                  <label className="flex flex-col w-1/2 relative">
+                     <span className="text-white">Create Password</span>
+                     <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={password}
+                        onChange={handleOnChange}
+                        placeholder="Enter password"
+                        className="px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 rounded-2xl"
+                        required
+                     />
+                     <span
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-3 top-9 text-gray-400 cursor-pointer"
+                     >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                     </span>
+                  </label>
 
-                            <button
-                               onClick={handleSignup}
-                               className="bg-yellow-500 text-black text-center rounded-2xl px-4 py-2 mt-4 font-semibold w-full"
-                            >   
-                               Signup
-                            </button>
-                      
-                  </p>
+                  <label className="flex flex-col w-1/2 relative">
+                     <span className="text-white">Confirm Password</span>
+                     <input
+                        type={showConfirm ? "text" : "password"}
+                        name="confirmPassword"
+                        value={confirmPassword}
+                        onChange={handleOnChange}
+                        placeholder="Confirm password"
+                        className="px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 rounded-2xl"
+                        required
+                     />
+                     <span
+                        onClick={() => setShowConfirm((prev) => !prev)}
+                        className="absolute right-3 top-9 text-gray-400 cursor-pointer"
+                     >
+                        {showConfirm ? <FaEyeSlash /> : <FaEye />}
+                     </span>
+                  </label>
+               </div>
 
-                     
-                      
-                  
-                  </div>
-                  
-               
-                </div>
-             </div>
- 
+               {/* Error Message */}
+               {error && <p className="text-red-500 text-sm font-semibold">{error}</p>}
 
-             <div className="items-center justify-center">
-               <img
-                  src={group_study}
-                  alt="group study"
-                   className="h-86 w-86"
-                
-               ></img>
-             </div>
-               </div> 
-                             
- ) }     
+               {/* Submit Button */}
+               <button
+                  type="submit"
+                  className="bg-yellow-500 text-black rounded-2xl px-4 py-2 font-semibold w-full"
+               >
+                  Signup
+               </button>
+            </form>
+         </div>
 
-export default Signup
+         {/* Right Section */}
+         <div className="w-1/2 flex justify-center items-center">
+            <img
+               src={group_study}
+               alt="Group Study"
+               className="h-[350px] w-[350px] object-contain"
+            />
+         </div>
+      </div>
+   );
+};
+
+export default Signup;

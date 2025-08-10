@@ -7,7 +7,12 @@ import { IoCart } from "react-icons/io5";
 import ProfiledropDown from "../core/Auth/ProfiledropDown";
 import { apiConnector } from "../../services/apiconnector";
 import { categories } from "../../services/apis";
+import { logout } from "../../services/operations/authAPI";
 import { IoIosArrowUp } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
+
 
 const subLinks = [
      {
@@ -21,7 +26,8 @@ const subLinks = [
 ]
 
 const NavbarLinks = () => {
-
+   const dispatch = useDispatch();
+   
   const {token} = useSelector((state)=>state.auth);
   const {user} = useSelector((state)=>state.profile);
    const { totalItems } = useSelector((state)=>state.cart);
@@ -52,6 +58,15 @@ const NavbarLinks = () => {
 
       return matchPath ({path:route,end:true},location.pathname)
   }
+
+   const onHandler = (e) => {
+         e.preventDefault()
+     dispatch(logout("firstName" ))
+             };
+
+    
+      
+
 
    return(
        <div className="flex flex-row h-14 items-center border-b-[1px] border-b-black">
@@ -121,6 +136,13 @@ const NavbarLinks = () => {
                {/* Login/Signup/Dashboard */}
                <div>
                <div className="flex gap-x-4 ml-80">
+               <img
+                  src={user?.image}
+                  alt={`profile-${user?.firstName}`}
+                  className=" aspect-square w-[78px] rounded-full object-cover"
+                  onClick={onHandler}
+               ></img>
+               
                    {
                      user && user?.accountType != "Instructor" && (
                         <Link to="/dashboard/cart" className="relative">

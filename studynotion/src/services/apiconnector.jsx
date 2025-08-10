@@ -29,7 +29,14 @@ export const apiConnector = async (method, url, bodyData = null, headers = null,
         console.log("✅ API SUCCESS:", response.data);
         return response;
     } catch (error) {
-        console.error("❌ API ERROR:", error.response?.data || error.message);
+        const errorMessage = error?.response?.data?.message || error.message;
+        const statusCode = error?.response?.status;
+
+        console.error("❌ API ERROR:", {
+            status: statusCode,
+            message: errorMessage,
+            fullError: error?.response?.data,
+        });
         throw error;
     }
 };

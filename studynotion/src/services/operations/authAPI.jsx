@@ -1,72 +1,11 @@
 
-// import { toast } from "react-toastify";
-// import { apiConnector } from "../apiconnector";
-// import { endpoints } from "../apis";
-// //import { setLoading} from "../../slices/authSlice";
-// // import { resetCart } from "../../slices/cartSlice";
-
-// const {
-//   SENDOTP_API,
-//   SIGNUP_API,
-//   LOGIN_API,
-//   RESETPASSTOKEN_API,
-//   RESETPASSWORD_API,
-// } = endpoints;
-
-// export function sendOtp(email, navigate) {
-//   return async (dispatch) => {
-//     const toastId = toast.loading("Sending OTP...");
-//     dispatch(setLoading(true));
-//     try {
-//       const response = await apiConnector("POST", SENDOTP_API, {
-//         email,
-//         checkUserPresent: true,
-//       });
-//       console.log("SENDOTP API RESPONSE:", response);
-//       if (!response.data.success) {
-//         throw new Error(response.data.message);
-//       }
-//       toast.success("OTP Sent Successfully");
-//       navigate("/verify-email");
-//     } catch (error) {
-//       console.log("SENDOTP API ERROR:", error);
-//       toast.error("Could Not Send OTP");
-//     }
-//     dispatch(setLoading(false));
-//     toast.dismiss(toastId);
-//   };
-// }
-
-
-
-// export function getPasswordResetToken(email , setEmailSent) {
-//   return async(dispatch) => {
-//     dispatch(setLoading(true));
-//     try{
-//       const response = await apiConnector("POST", RESETPASSWORD_API, {email,});
-
-//       console.log("RESET PASSWORD TOKEN RESPONSE....", response);
-
-//       if(!response.data.success) {
-//         throw new Error(response.data.message);
-//       }
-
-//       toast.success("Reset Email Sent");
-//       setEmailSent(true);
-//     }
-//     catch(error) {
-//       console.log("RESET PASSWORD TOKEN Error");
-//       toast.error("Failed to send email for resetting password");
-//     }
-//     dispatch(setLoading(false));
-//   }
-// }
 
 import { toast } from "react-hot-toast";
 import { apiConnector } from "../apiconnector";
 import { endpoints } from "../apis";
-import { setLoading, setToken, setUser } from "../../slices/authSlice";
+import { setLoading, setToken, setUser  } from "../../slices/authSlice";
 import { resetCart } from "../../slices/cartSlice";
+import { useNavigate } from "react-router-dom";
 
 
 const {
@@ -75,16 +14,18 @@ const {
   LOGIN_API,
   RESETPASSTOKEN_API,
   RESETPASSWORD_API,
+  UPDATE_DISPLAY_PICTURE_API
 } = endpoints;
 
 // 1. Send OTP
 export function sendOtp(email, navigate) {
+  
   return async (dispatch) => {
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
 
     try {
-      const response = await apiConnector("POST", SENDOTP_API, {
+      const response = await apiConnector("POST", SENDOTP_API , {
         email,
         checkUserPresent: true,
       });
@@ -119,9 +60,10 @@ export function signUp(
   navigate
 ) {
   return async (dispatch) => {
+    
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
-
+      
     try {
       const response = await apiConnector("POST", SIGNUP_API, {
         accountType,
@@ -139,7 +81,14 @@ export function signUp(
         throw new Error(response.data.message);
       }
 
+       const { token, user } = response.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch(setToken(token));
+      dispatch(setUser(user));
+
       toast.success("Signup Successful");
+
       navigate("/login");
     } catch (error) {
       console.log("SIGNUP API ERROR...........", error);
@@ -159,7 +108,7 @@ export function login(email, password, navigate) {
     dispatch(setLoading(true));
 
     try {
-      const response = await apiConnector("POST", LOGIN_API, {
+      const response = await apiConnector("POST", LOGIN_API , {
         email,
         password,
       });
@@ -179,7 +128,8 @@ export function login(email, password, navigate) {
         : `https://api.dicebear.com/5.x/initials/svg?seed=${response.data.user.firstName} ${response.data.user.lastName}`;
 
       dispatch(setUser({ ...response.data.user, image: userImage }));
-
+       console.log("After set user",response.setUser);
+       
       localStorage.setItem("token", JSON.stringify(response.data.token));
       localStorage.setItem("user", JSON.stringify({ ...response.data.user, image: userImage }));
 
@@ -187,6 +137,7 @@ export function login(email, password, navigate) {
     } catch (error) {
       console.log("LOGIN API ERROR..............", error);
       toast.error("Login Failed");
+      navigate("/login")
     }
 
     dispatch(setLoading(false));
@@ -260,6 +211,32 @@ export function getPasswordResetToken(email, setEmailSent) {
       dispatch(setLoading(false));
     };
   }
+
+ export function imageUpload(name,imageUrl,tags,email){
+  return async()=>
+   {
+      try {
+        const response = await apiConnector("POST", UPDATE_DISPLAY_PICTURE_API, {
+          name,
+          imageUrl,
+          tags,
+          email
+        })
+
+        console.log("upload password reponse ... ", response);
+
+        if(!response.data.success){
+    throw new Error(response.data.message);
+  }
+
+  toast.success("image upload successfully");
+} catch (error) {
+  console.log("UPLOAD  IMAGE Error", error);
+  toast.error("Unable to upload image");
+}
+   }
+  
+ } 
 
 
 

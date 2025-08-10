@@ -4,25 +4,45 @@ import girl from "../assets/Images/girl.webp"
 import { useDispatch} from "react-redux";
 import {useNavigate,Link} from "react-router-dom";
 
+import { login } from "../services/operations/authAPI";
+
+
+
  
 
 const Login = ()=>{
-   
+
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
+
+   const [showConfirm, setShowConfirm] = useState(false);
    const [formData,setFormData] = useState({
       email:"",
       password:"",
-   })
+   });
 
-     const [showConfirm, setShowConfirm] = useState(false);
-     const {email,password} = formData;
+   const {email,password} = formData
+
+   const handleOnChange = (e) => {
+      setFormData((prev) => ({
+         ...prev,
+         [e.target.name]: e.target.value,
+      }));
+   };
+
      
      const handleOnSubmit = (e) => {
+
       e.preventDefault()
-      dispatch(Login(email, password , navigate ))
-      setFormData
-     }
+
+      if(!email || !password){
+         alert("Please fill all requirement")
+         return;
+      }
+
+      dispatch(login(email, password , navigate ))
+        };
   
        return(
               <form onSubmit={handleOnSubmit} className="w-50% flex flex-row gap-70 items-center mt-46">
@@ -41,20 +61,26 @@ const Login = ()=>{
                      </p>
                    
                    <div className="gap-y-72">
-                   <p className="text-white mt-4">Email Adress</p>
+                   <label className="text-white mt-4">Email Adress</label>
                    <input
                    type="text"
+                      name="email"
+                      value={email}
+                      onChange={handleOnChange}
                    placeholder="Enter the email address"
-                   class="w-full px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
+                   className="w-full px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
                 /> 
                 
                 <div className="flex flex-row gap-8 mt-4">
                     <p className="flex flex-col">
-                      <p className="text-white">Password </p>
+                      <label className="text-white">Password </label>
                       <input
                          type={showConfirm?"text":"password"}
+                            name="password"
+                            value={password}
+                            onChange={handleOnChange}
                          placeholder="Enter the  Password"
-                         class=" px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
+                         className=" px-4 py-2 bg-gray-700 text-white placeholder:text-gray-400 placeholder:font-medium rounded-2xl"
                       />
                       
                       <span
