@@ -42,8 +42,9 @@ function App() {
 
 
         <Route element={
-
+          <PrivateRoute>
           <Dashboard></Dashboard>
+          </PrivateRoute>
 
         }>
           <Route path="dashboard/my-profile" element={< MyProfile />}></Route>

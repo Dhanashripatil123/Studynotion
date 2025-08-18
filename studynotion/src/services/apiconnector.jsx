@@ -49,20 +49,55 @@ export const apiConnector = async (method, url, bodyData = null, headers = null,
 //     withCredentials: true,
 // });
 
-// // Actual request function
-// export const apiConnector = async (method, url, bodyData, headers, params) => {
+// // // Actual request function
+// // export const apiConnector = async (method, url, bodyData, headers, params) => {
+// //     try {
+// //         const response = await axiosInstance({
+// //             method,
+// //             url,
+// //             data: bodyData || null,
+// //             headers: headers || {},
+// //             params: params || null,
+// //         });
+// //         return response;
+// //     } catch (error) {
+// //         // Optional: Log for debugging
+// //         console.error("API Connector Error:", error);
+// //         throw error;
+// //     }
+// // };
+
+// import axios from "axios";
+
+// // A reusable API connector
+// export const apiConnector = async (method, url, body = {}, headers = {}, isFormData = false) => {
 //     try {
-//         const response = await axiosInstance({
+//         const config = {
 //             method,
 //             url,
-//             data: bodyData || null,
-//             headers: headers || {},
-//             params: params || null,
-//         });
+//             headers: {
+//                 ...headers,
+//             },
+//         };
+
+//         // Handle body depending on isFormData
+//         if (method.toUpperCase() !== "GET") {
+//             if (isFormData) {
+//                 const formData = new FormData();
+//                 for (const key in body) {
+//                     formData.append(key, body[key]);
+//                 }
+//                 config.data = formData;
+//                 config.headers["Content-Type"] = "multipart/form-data";
+//             } else {
+//                 config.data = body;
+//             }
+//         }
+
+//         const response = await axios(config);
 //         return response;
 //     } catch (error) {
-//         // Optional: Log for debugging
-//         console.error("API Connector Error:", error);
+//         console.error("❌ API ERROR: ", error.response || error.message);
 //         throw error;
 //     }
 // };

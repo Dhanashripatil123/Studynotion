@@ -1,7 +1,7 @@
 import React from "react";
-import  IconBtn  from "./IconBtn";
+import  IconBtn  from "./IconButton";
 
-export const ConfirmationData = ({modalData})=>{
+const Confirmationmodel = ({modalData})=>{
     return(
       <div>
          <p>
@@ -22,3 +22,5 @@ export const ConfirmationData = ({modalData})=>{
       </div>                                            
     )
 }
+
+export default Confirmationmodel
