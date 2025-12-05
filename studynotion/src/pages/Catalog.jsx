@@ -45,26 +45,25 @@ const Catalog = () => {
 			},[categoryId]);
 
 		 return (
-		 		 <div className="text-white bg-slate-900 min-h-screen">
-		 			 <div className="max-w-6xl mx-auto px-4 py-8">
+			 <div className="text-white bg-slate-900 min-h-screen">
+				 <div className="max-w-6xl mx-auto px-4 py-8">
 					 {/* Breadcrumb & Title */}
 					 <div className="text-sm text-gray-400 mb-3">
 						 Home / <span className="text-gray-200">Catalog</span> / <span className="text-indigo-300">{catalogPageData?.data?.selectedCategory?.name || catalogName}</span>
 					 </div>
 
-			 			 <header className="mb-6">
-			 				 <h1 className="text-3xl font-semibold text-white">{catalogPageData?.data?.selectedCategory?.name || catalogName}</h1>
-			 				 <p className="mt-2 text-gray-300 max-w-3xl">{catalogPageData?.data?.selectedCategory?.description || 'Explore courses and learning paths.'}</p>
-			 			 </header>
+					 <header className="mb-6">
+						 <h1 className="text-3xl font-semibold text-white">{catalogPageData?.data?.selectedCategory?.name || catalogName}</h1>
+						 <p className="mt-2 text-gray-300 max-w-3xl">{catalogPageData?.data?.selectedCategory?.description || 'Explore courses and learning paths.'}</p>
+					 </header>
 
 					 {/* Filters / Chips */}
-		 			{/* Filters / Chips */}
-		 			<div className="flex flex-wrap gap-3 items-center mt-4 mb-8">
-		 				 <button className="px-3 py-1 bg-indigo-600 text-white rounded-full text-sm">Most Popular</button>
-		 				 <button className="px-3 py-1 bg-transparent border border-gray-700 text-gray-200 rounded-full text-sm">Newest</button>
-		 				 <button className="px-3 py-1 bg-transparent border border-gray-700 text-gray-200 rounded-full text-sm">Highest Rated</button>
-		 				 <div className="ml-auto text-sm text-gray-400">{(catalogPageData?.data?.selectedCategory?.courses?.length || 0)} courses</div>
-		 			</div>
+					 <div className="flex flex-wrap gap-3 items-center mt-4 mb-8">
+						 <button className="px-3 py-1 bg-indigo-600 text-white rounded-full text-sm">Most Popular</button>
+						 <button className="px-3 py-1 bg-transparent border border-gray-700 text-gray-200 rounded-full text-sm">Newest</button>
+						 <button className="px-3 py-1 bg-transparent border border-gray-700 text-gray-200 rounded-full text-sm">Highest Rated</button>
+						 <div className="ml-auto text-sm text-gray-400">{(catalogPageData?.data?.selectedCategory?.courses?.length || 0)} courses</div>
+					 </div>
 
 					 {/* Hero Slider */}
 					 <section className="mb-10">
