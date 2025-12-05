@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 
 const RenderTotalAmount = () => {
 
-   const {total} = useSelector((state)=>state.auth);   
+   const {total,cart} = useSelector((state)=>state.auth);   
    
    const handleBuyCourse = () => {
        const courses = cart.map((course) => course._id)

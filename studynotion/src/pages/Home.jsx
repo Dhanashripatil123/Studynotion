@@ -31,7 +31,7 @@ const Home = () => {
 
         <div className='text-center text-4xl font-semibold mt-8 text-white'>
           EMPOWER YOUR FUTURE WITH
-          <HighlightText text={"Coding Skills"} ></HighlightText>                                    */}
+          <HighlightText text={"Coding Skills"} ></HighlightText>
         </div>
 
         <div className='text-center w-[90%] text-lg font-bold text-richblack-300'>
@@ -53,7 +53,7 @@ const Home = () => {
           </video>
         </div>
 
-        {/* {code section 2}                           */}
+        {/* code section 2 */}
         <div>
           <CodeBlocks position={"lg:flex-row"}
             heading={

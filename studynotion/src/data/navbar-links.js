@@ -5,8 +5,8 @@ export const Navbar = [
 
    },                                               
    {
-      title: "catlog",
-     // path:"/"
+      title: "Catalog",
+      path:"/catalog"
 
    },                                               
    {

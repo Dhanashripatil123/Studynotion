@@ -9,6 +9,8 @@ const iconMap = {
      FaBook: FaIcons.FaBook,
      FaPlus: FaIcons.FaPlus,
      IoSettingsOutline: IoIcons.IoSettingsOutline,
+     FaGraduationCap: FaIcons.FaGraduationCap,
+     FaHistory: FaIcons.FaHistory,
 };
 const SidebarLink = ({ link }) => {
      const location = useLocation();

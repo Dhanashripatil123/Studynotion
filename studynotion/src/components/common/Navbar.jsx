@@ -1,4 +1,4 @@
-import {React,useEffect,useState} from "react";
+import {React,useEffect,useState,useRef} from "react";
 import Study_Logo from "../../assets/Images/Study_Logo.webp"
 import { Navbar } from "../../data/navbar-links";
 import { Link, matchPath ,useLocation} from "react-router-dom";
@@ -7,6 +7,7 @@ import { IoCart } from "react-icons/io5";
 import ProfiledropDown from "../core/Auth/ProfiledropDown";
 import { apiConnector } from "../../services/apiconnector";
 import { categories } from "../../services/apis";
+import { fetchCourseCategories } from "../../services/operations/courseDetailsAPI";
 import { logout } from "../../services/operations/authAPI";
 import { IoIosArrowUp } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
@@ -14,16 +15,9 @@ import { useDispatch } from "react-redux";
 
 
 
-const subLinks = [
-     {
-      title: "python",
-      link:"/catalog/python"
-     },
-     {
-      title: "web app",
-      link:"/catalog/web-development"
-     }
-]
+const subLinksFallback = [
+   { title: 'Loading...', link: '#' }
+];
 
 const NavbarLinks = () => {
    const dispatch = useDispatch();
@@ -32,23 +26,62 @@ const NavbarLinks = () => {
   const {user} = useSelector((state)=>state.profile);
    const { totalItems } = useSelector((state)=>state.cart);
    const location = useLocation();
+   const navigate = useNavigate();
 
    const [subLink,setSubLinks] = useState([]);
+   const [catalogOpen, setCatalogOpen] = useState(false);
+   const catalogRef = useRef(null);
 
-   // const fetchSublinks = async () => {
-   //    try {
-   //       const result = await apiConnector("GET", categories.CATEGORIES_API);
-   //       console.log("printing sublinks result:", result);
-   //       setSubLinks(result.data.data)
-   //    }
-   //    catch (error) {
-   //       console.log("could not fetch the categories")
-   //    }
-   // }
+   useEffect(()=>{
+      const loadCategories = async ()=>{
+         try{
+            // Curated list of category titles to show in navbar
+            const curatedTitles = [
+               'AI / ML',
+               'Web Dev',
+               'Python',
+               'Data Science',
+               'DSA',
+            ];
 
-   // useEffect( ()=>{
-   //    // fetchSublinks()
-   // },[])
+            // fetch all categories from server and try to resolve each curated title to a real category id
+            const resp = await apiConnector('GET', categories.SHOW_ALL_CATEGORIES);
+            const list = resp?.data?.data || [];
+
+            const canonical = (str) => String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            const curated = curatedTitles
+               .map((title) => {
+                  const normalized = canonical(title);
+                  const matched = list.find(ct => (canonical(ct?.name) === normalized || canonical(ct?.slug) === normalized));
+                  if (matched && matched._id) {
+                     return { title, link: `/catalog/${matched._id}` };
+                  }
+                  // If no matched category in DB, skip adding a fallback slug link so
+                  // navbar links always point to real category ids (prevents slug-based requests).
+                  return null;
+               })
+               .filter(Boolean);
+
+            // If nothing matched (rare), fall back to a simple loading placeholder
+            setSubLinks(curated.length ? curated : subLinksFallback);
+         }catch(err){
+            console.error('Failed to set curated category sublinks', err);
+            setSubLinks(subLinksFallback);
+         }
+      }
+      loadCategories();
+   },[])
+
+     // close catalog dropdown when clicking outside
+     useEffect(()=>{
+        const handler = (e)=>{
+           if(catalogRef.current && !catalogRef.current.contains(e.target)){
+              setCatalogOpen(false);
+           }
+        }
+        window.addEventListener('click', handler);
+        return ()=> window.removeEventListener('click', handler);
+     },[])
 
   const matchRoutes = (route)=>{
       
@@ -59,9 +92,9 @@ const NavbarLinks = () => {
       return matchPath ({path:route,end:true},location.pathname)
   }
 
-   const onHandler = (e) => {
-         e.preventDefault()
-     dispatch(logout("firstName" ))
+      const onHandler = (e) => {
+          e.preventDefault()
+       dispatch(logout(navigate))
              };
 
     
@@ -90,30 +123,30 @@ const NavbarLinks = () => {
                            
                              <li key={index}> 
                                  {
-                                    link.title === "catlog" ? (
-                                    <div className="relative flex items-center gap-2 group">
-                                          <p>{link.title}</p>
-                                          <IoIosArrowUp />
+                                    // handle variations of the catalog title (catlog, Catalog, etc.) or path
+                                    (link.title && link.title.toString().toLowerCase().includes('cat')) || (link.path && link.path.toString().toLowerCase().includes('/catalog')) ? (
+                                    <div ref={catalogRef} className="relative flex items-center gap-2">
+                                          <button onClick={(e)=>{ e.stopPropagation(); setCatalogOpen(open => !open); }} className="flex items-center gap-2">
+                                            <p>{link.title}</p>
+                                            <IoIosArrowUp />
+                                          </button>
 
-                                       <div className="invisible absolute left-[50%] translate-x-[-50%] translate-y-[80%] top-[50%] flex flex-col rounded-md bg-white p-4 text-black opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 lg:w-[300px]" >
+                                       <div className={`absolute left-[50%] translate-x-[-50%] translate-y-[80%] top-[50%] z-50 flex flex-col rounded-md bg-white p-4 text-black transition-all duration-150 lg:w-[300px] ${catalogOpen ? 'visible opacity-100 scale-100' : 'invisible opacity-0 scale-95'}`} >
 
                                          
                                           <div className="absolute left-[50%] top-0 translate-x-[80%] translate-y-[-45%]  h-6 w-6 rotate-45 rounded bg-white ">
 
                                           </div>
 
-                                          {
-                                             subLinks.length ? (
-                                                
-                                                  subLinks.map((subLink, index)=>(
-                                                   <Link to={`${subLink.link}`} key={index}>
-                                                      <p>{subLink.title}</p>
-                                                      
-                                                   </Link>
-                                                  )) 
-                                                
-                                             ):(<div></div>)
-                                          }
+                                                { (subLink && subLink.length) ? (
+                                                      subLink.map((s, idx) => (
+                                                         <Link to={s.link} key={s.id || idx} onClick={()=> setCatalogOpen(false)}>
+                                                            <p className="py-1">{s.title}</p>
+                                                         </Link>
+                                                      ))
+                                                   ) : (
+                                                      <div className="py-2 text-sm text-gray-600">No categories</div>
+                                                   ) }
 
                                           </div>
                                     </div>):(

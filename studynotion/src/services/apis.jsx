@@ -13,8 +13,19 @@ export const endpoints = {
 
 // Other APIs
 export const categories = {
-  SHOW_ALL_CATEGORIES: BASE_URL + "/course/showAllCategories",
+  SHOW_ALL_CATEGORIES: BASE_URL + "/course/getAllCategories",
 };
+
+export const catalogData = {
+  CATALOGPAGEDATA_API :BASE_URL + '/course/getCategoryPageDetails',
+}
+
+
+export const altCategory = {
+  // alternate public route added on server: GET /api/category/:categoryId/courses
+  COURSES_BY_CATEGORY: BASE_URL + '/category',
+}
+
 
 
 export const contactEndpoints = {
@@ -34,6 +45,7 @@ export const profileEndpoints = {
 
 
 
+
 export const courseEndpoints = {
   COURSE_DETAILS_API: BASE_URL + "/course/getCourseDetails",
   COURSE_CATEGORIES_API: BASE_URL + "/course/getAllCategories",
@@ -49,7 +61,9 @@ export const courseEndpoints = {
   GET_ALL_INSTRUCTOR_COURSES_API: BASE_URL + "/course/getInstructorCourses",
   DELETE_COURSE_API: BASE_URL + "/course/deleteCourse",
   GET_FULL_COURSE_DETAILS_AUTHENTICATED: BASE_URL + "/course/getFullCourseDetails",
+  COURSE_ENROLL_API: BASE_URL + "/course/enroll",
   CREATE_RATING_API: BASE_URL + "/course/createRating",
   LECTURE_COMPLETION_API: BASE_URL + "/course/lectureCompletion",
+  GET_COURSES_BY_CATEGORY: BASE_URL + "/course/courses/category",
 };
 

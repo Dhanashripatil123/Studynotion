@@ -16,7 +16,7 @@ export default async function enrolledCourses(token) {
   const toastId = toast.loading("Loading...")
   let result = []
 
-  try {
+  try{
     const response = await apiConnector(
       "GET",
       GET_USER_ENROLLED_COURSES_API,
@@ -27,7 +27,7 @@ export default async function enrolledCourses(token) {
     )
 
     // Debugging log
-    // console.log("GET_USER_ENROLLED_COURSES_API RESPONSE: ", response)
+  console.log("GET_USER_ENROLLED_COURSES_API RESPONSE: ", response)
 
     if (!response.data.success) {
       throw new Error(response.data.message)

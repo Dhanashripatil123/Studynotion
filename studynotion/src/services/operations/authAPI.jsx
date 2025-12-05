@@ -5,7 +5,6 @@ import { apiConnector } from "../apiconnector";
 import { endpoints } from "../apis";
 import { setLoading, setToken, setUser  } from "../../slices/authSlice";
 import { resetCart } from "../../slices/cartSlice";
-import { useNavigate } from "react-router-dom";
 
 
 const {
@@ -37,7 +36,7 @@ export function sendOtp(email, navigate) {
       }
 
       toast.success("OTP Sent Successfully");
-      navigate("/verify-email");
+      if (typeof navigate === 'function') navigate("/verify-email");
     } catch (error) {
       console.log("SENDOTP API ERROR............", error);
       toast.error("Could Not Send OTP");
@@ -88,12 +87,11 @@ export function signUp(
       dispatch(setUser(user));
 
       toast.success("Signup Successful");
-
-      navigate("/login");
+      if (typeof navigate === 'function') navigate("/login");
     } catch (error) {
       console.log("SIGNUP API ERROR...........", error);
       toast.error("Signup Failed");
-      navigate("/signup");
+      if (typeof navigate === 'function') navigate("/signup");
     }
 
     dispatch(setLoading(false));
@@ -130,14 +128,15 @@ export function login(email, password, navigate) {
       dispatch(setUser({ ...response.data.user, image: userImage }));
        console.log("After set user",response.setUser);
        
-      localStorage.setItem("token", JSON.stringify(response.data.token));
+      // store raw token string (avoid double-quoting)
+      localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify({ ...response.data.user, image: userImage }));
 
-      navigate("/dashboard/my-profile");
+      if (typeof navigate === 'function') navigate("/dashboard/my-profile");
     } catch (error) {
       console.log("LOGIN API ERROR..............", error);
       toast.error("Login Failed");
-      navigate("/login")
+      if (typeof navigate === 'function') navigate("/login");
     }
 
     dispatch(setLoading(false));
@@ -154,7 +153,12 @@ export function logout(navigate) {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     toast.success("Logged Out");
-    navigate("/");
+    // navigate may be optional; only call if it's a function
+    try {
+      if (typeof navigate === 'function') navigate("/");
+    } catch (e) {
+      // ignore
+    }
   };
 }
 

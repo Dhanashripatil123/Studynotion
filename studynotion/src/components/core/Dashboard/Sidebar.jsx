@@ -6,7 +6,7 @@ import { GoSignOut } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
-   const { user, loadings: profileLoading } = useSelector((state) => state.profile);
+   const { user, loading: profileLoading } = useSelector((state) => state.profile);
    const { loading: authLoading } = useSelector((state) => state.auth);
    const dispatch = useDispatch();
    const navigate = useNavigate();

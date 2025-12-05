@@ -17,8 +17,14 @@ const cartSlice = createSlice({
      name: "cart",
      initialState,
      reducers: {
-          resetCart:()=>{
+          resetCart:(state)=>{
+               state.cart = []
+      state.total = 0
+      state.totalItems = 0
 
+      localStorage.removeItem("cart")
+      localStorage.removeItem("total")
+      localStorage.removeItem("totalItems")
           },
           addToCart: (state, action) => {
                const course = action.payload

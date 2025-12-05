@@ -16,7 +16,7 @@ import axios from "axios";
 
 export const axiosInstance = axios.create({ withCredentials: true });
 
-export const apiConnector = async (method, url, bodyData = null, headers = null, params = null) => {
+export const apiConnector = async (method, url, bodyData = null, headers = null, params ) => {
     try {
         const response = await axiosInstance({
             method: method,

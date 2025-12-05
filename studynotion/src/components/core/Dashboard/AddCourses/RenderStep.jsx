@@ -3,7 +3,7 @@ import { IoTimeSharp } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import CourseInformation from "./CourseInfrormation/CourseInformation"
 import CourseBuilderForm from "./CourseBuilder/CourseBuilderForm";
-// import PublishCourse from "./PublishCourse/PublishCourse"; // Uncomment when created
+import PublishCourse from "./PublishCourse/PublishCourse";
 
 export default function RenderStep() {
   const { step } = useSelector((state) => state.course);
@@ -17,46 +17,39 @@ export default function RenderStep() {
   return (
     <div>
       {/* Step Circles */}
-      <div className="flex items-center gap-4">
-        {steps.map((item, index) => (
-          <div key={item.id} className="flex items-center">
-            <div
-              className={`w-10 h-10 flex items-center justify-center rounded-full border-2 ${step === item.id
-                  ? "bg-yellow-900 border-yellow-500 text-yellow-500"
-                  : step > item.id
-                    ? "bg-green-600 border-green-600 text-white"
-                    : "border-gray-600 bg-black text-white"
-                }`}
-            >
-              {step > item.id ? <FaCheck /> : item.id}
+      <div className="flex items-center gap-2 md:gap-6">
+        {steps.map((item, index) => {
+          const isActive = step === item.id;
+          const isCompleted = step > item.id;
+          return (
+            <div key={item.id} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div
+                  aria-hidden
+                  className={`w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full shadow-md transition-transform duration-200 transform ${isActive ? "scale-105 ring-4 ring-yellow-300 bg-gradient-to-br from-yellow-500 to-yellow-400 text-black border-yellow-400" : isCompleted ? "bg-green-600 border-green-600 text-white" : "border border-gray-700 bg-gray-900 text-gray-200 hover:scale-105"}`}
+                >
+                  {isCompleted ? <FaCheck className="text-white" /> : <span className="font-semibold">{item.id}</span>}
+                </div>
+
+                <p className={`mt-2 text-xs md:text-sm text-center ${step === item.id ? "text-yellow-400 font-semibold" : "text-gray-400"}`}>
+                  {item.title}
+                </p>
+              </div>
+
+              {/* Dash between steps */}
+              {index !== steps.length - 1 && (
+                <div className={`${isCompleted ? "w-8 md:w-16 h-1 bg-yellow-400" : "w-8 md:w-16 h-[2px] bg-gray-700"} mx-4 rounded`}></div>
+              )}
             </div>
-
-            {/* Dash between steps */}
-            {index !== steps.length - 1 && (
-              <div className="w-10 h-[2px] bg-gray-400"></div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Step Titles */}
-      <div className="flex gap-8 mt-2">
-        {steps.map((item) => (
-          <p
-            key={item.id}
-            className={`text-sm ${step === item.id ? "text-yellow-500" : "text-gray-400"
-              }`}
-          >
-            {item.title}
-          </p>
-        ))}
+          )
+        })}
       </div>
 
       {/* Step Components */}
       <div className="mt-6">
         {step === 1 && <CourseInformation />}
         {step === 2 && <CourseBuilderForm />}
-        {/* {step === 3 && <PublishCourse />} */}
+        {step === 3 && <PublishCourse />}
       </div>
     </div>
   );
