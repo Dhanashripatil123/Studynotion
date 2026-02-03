@@ -1,1 +1,0 @@
-const {instance} = require("../config/raz")

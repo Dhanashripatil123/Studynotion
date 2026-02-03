@@ -1,1 +1,0 @@
-const Tag = require("../model")

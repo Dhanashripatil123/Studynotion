@@ -1,7 +1,0 @@
-//sendOTP
-
-// signup
-
-//login
-
-//changepass

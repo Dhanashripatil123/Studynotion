@@ -1,1 +1,0 @@
-const Sectioon = require("../models/")

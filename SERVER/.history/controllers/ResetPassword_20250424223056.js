@@ -1,7 +1,0 @@
-
-const User = 
-
-//resetPasswordToken
-
-
-//resetPassword

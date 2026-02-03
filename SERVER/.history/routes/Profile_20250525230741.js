@@ -1,2 +1,0 @@
-//Delete user Account
-route

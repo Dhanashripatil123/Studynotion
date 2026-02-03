@@ -1,4 +1,0 @@
-//resetPasswordToken
-
-
-//resetPassword
