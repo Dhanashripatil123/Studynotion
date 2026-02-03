@@ -1,0 +1,104 @@
+// Import the required modules
+const express = require("express")
+const router = express.Router();
+
+//Import the Cotrollers
+//Course Controller Import
+const{
+     createCourse,
+     showAllCourses,
+     getCoursesDetails,
+     getCourseDetails,
+     getFullCourseDetails,
+     getInstructorCourses,
+     deleteCourse,
+     enrollCourse,
+     getCoursesByCategory                                      
+} = require("../controllers/Course")
+
+//Categories Controller Import
+const {
+     showAllcategorie,
+     createCategorie,
+     CategoryPageDetails                                     
+} = require("../controllers/Categories")
+
+//Section Controller Import
+const{
+     createSection,
+     updatedSection,
+     deleteSection                                            
+} = require("../controllers/Section")
+
+//SubSection Controller Import
+const{
+    
+     updateSubSection,
+     deleteSubSection,                                            
+     createSubSection
+} = require("../controllers/Subsection")
+
+//RAting and review Controller Import
+const{
+     createRating,
+     getAveargeRating,
+     getAllRating
+} = require("../controllers/RatingAndReview")
+
+// `CourseProgess.js` file exists (typo in filename). Import its exported handler
+// and rename `updateCourseProgess` -> `updateCourseProgress` for route compatibility.
+const { updateCourseProgess: updateCourseProgress } = require("../controllers/CourseProgess");
+
+//Importing Middleware
+const {auth,isInstructor,isStudent,isAdmin} = require("../middlewares/auth");
+
+//***************************************************************** */
+//                Course routes
+//************************************************************************** */
+
+//Courses can only be created by instructor
+router.post("/createCourse",auth,isInstructor,createCourse)
+router.post("/showAllCourses", auth,isInstructor,showAllCourses)
+router.post("/getCoursesDetails",auth,isInstructor, getCoursesDetails)
+// Public course detail endpoint used by frontend
+router.post("/getCourseDetails", getCourseDetails)
+// Authenticated full details (returns gated fields)
+router.post("/getFullCourseDetails", auth, getFullCourseDetails)
+// Enroll endpoint for authenticated students
+router.get('/enrolled-courses', auth, isStudent, enrollCourse)
+router.get('/getInstructorCourses', auth, isInstructor, getInstructorCourses)
+router.post('/deleteCourse', auth, isInstructor, deleteCourse)
+// Public: get courses by category id
+router.get("/courses/category/:categoryId", getCoursesByCategory)
+
+//Add a Section to a course
+router.post("/addSection",auth,isInstructor,createSection)
+//Update section
+router.post("/UpdateSection", auth, isInstructor, updatedSection)
+//Delete section
+router.post("/deleteSection",auth,isInstructor,deleteSection)
+
+router.post("/updateCourseProgress",auth,isStudent,updateCourseProgress)
+//Edit sub section
+router.post("/updateSubSection", auth, isInstructor, updateSubSection)
+//Delete Sub Section
+router.post("/deleteSubSection", auth, isInstructor, deleteSubSection)
+//Add a sub section to a section
+router.post("/addSubSection", auth, isInstructor, createSubSection)
+
+// Alternate route (kept for compatibility) — ensure correct controller binding
+router.post('/subsection/create', auth, isInstructor, createSubSection)
+
+//TODO: put IsAdmin Middleware here
+router.post("/createCategory", auth, isAdmin, createCategorie)
+router.get("/getAllCategories", showAllcategorie)
+router.post("/getCategoryPageDetails", CategoryPageDetails)
+
+//***************************************************************************
+//             Rating and Review
+//************************************************************************ */
+router.post("/createRating", auth, isStudent, createRating)
+router.get("/getAveargeRating", getAveargeRating)
+router.get("/getAllRating",getAllRating)
+
+module.exports = router;

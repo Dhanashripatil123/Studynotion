@@ -1,0 +1,92 @@
+import React from 'react'
+import CTAButton from '../../core/Homepage/Button';
+import HighlightText from '../Homepage/HighlightText';
+
+const LearningGridArray = [
+    {
+        order: -1,
+        heading: "World-Class Learning for",
+        highlightText: "Anyone, Anywhere",
+        description:
+            "Studynotion partners with more than 275+ leading universities and companies to bring flexible, affordable, job-relevant online learning to individuals and organizations worldwide.",
+        BtnText: "Learn More",
+        BtnLink: "/",
+    },
+    {
+        order: 1,
+        heading: "Curriculum Based on Industry Needs",
+        description:
+            "Save time and money! The Belajar curriculum is made to be easier to understand and in line with industry needs.",
+    },
+    {
+        order: 2,
+        heading: "Our Learning Methods",
+        description:
+            "Studynotion partners with more than 275+ leading universities and companies to bring",
+    },
+    {
+        order: 3,
+        heading: "Certification",
+        description:
+            "Studynotion partners with more than 275+ leading universities and companies to bring",
+    },
+    {
+        order: 4,
+        heading: "Auto-grading",
+        description:
+            "Studynotion partners with more than 275+ leading universities and companies to bring",
+    },
+    {
+        order: 5,
+        heading: "Ready to Work",
+        description:
+            "Studynotion partners with more than 275+ leading universities and companies to bring",
+    },
+];
+
+
+export const LearningGrid = () => {
+  
+ return(
+        <div className='grid grid-cols-1 lg:grid-cols-4 gap-6 mx-auto mb-10 w-11/12 max-w-6xl'>
+            {
+                LearningGridArray.map((card,index)=>{
+                      return(
+                        <div
+                        key={index}
+                        className={`p-5 rounded-md ${index === 0 ? 'lg:col-span-2 lg:h-[280px]' : 'lg:h-[300px]'} ${card.order < 0 ? 'bg-transparent' : (card.order % 2 === 1 ? 'bg-gray-700' : 'bg-gray-900')}`}
+                        >
+                        {
+                            card.order < 0 ? (<div className='lg:w-[90%] flex flex-col pb-5 gap-3'>
+                                <div className='text-4xl font-semibold'>
+                                    {card.heading}
+                                    <HighlightText text={card.highlightText}></HighlightText>
+                                </div>
+                                <p className='font-medium'>
+                                   {card.description}
+                                </p>
+                                <div className='w-fit mt-4'>
+                                    <CTAButton active={true} linkto={card.BtnLink}>
+                                      {card.BtnText} 
+                                    </CTAButton>
+                                </div>
+                            </div>):
+                            (<div>
+                                <h1>
+                                    {card.heading}
+                                </h1>
+                                <p>
+                                    {card.description}
+                                </p>
+                            </div>)
+                         }  
+
+
+                        </div>
+                      )
+                })
+            }
+          
+        </div>                                          
+    )
+}

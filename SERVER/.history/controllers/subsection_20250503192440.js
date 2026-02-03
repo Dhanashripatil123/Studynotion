@@ -1,0 +1,23 @@
+const Subsection = require('../models/SubSection');
+const Section = require('../models/section')
+
+//create Subsection
+
+exports.creteSubSection = async(req,res)=>{
+     try{
+        //fetch data from req body
+        const {sectionId,title,timeDuration,description} = req.body
+
+        //extract file/video
+        const video = req.files.videoFile;
+        //validation
+        if(!sectionId || !title || !timeDuration || !description || !video){
+            return res.status().json({
+               
+            })
+        }
+
+     }catch(error){
+         
+     }
+}
