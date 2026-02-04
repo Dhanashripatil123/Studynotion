@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -27,3 +28,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+=======
+.history/
+>>>>>>> 774d9f3e3483c0ededa4bf9b51e71d2b9bb3e8f9
