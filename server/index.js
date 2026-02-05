@@ -31,27 +31,28 @@ app.use(express.json());
 app.use(cookiesParser());
 // Allow CORS for local dev ports (add 3003 since Vite may pick it)
 const allowedOrigins = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:3002",
-    "http://localhost:3003",
-    "http://localhost:4173",
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:3002",
+  "http://localhost:3003",
+  "http://localhost:4173",
+  "https://studynotion-kqfz.onrender.com"
 ];
 
 app.use(
-    cors({
-        origin: function (origin, callback) {
-            // allow requests with no origin (like curl/postman)
-            if (!origin) return callback(null, true);
-            if (allowedOrigins.indexOf(origin) !== -1) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
-        credentials: true,
-    })
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
 );
+
 
 app.use(
     fileuplad({
@@ -80,6 +81,11 @@ app.get('/api/category/:categoryId/courses', getCoursesByCategory);
 app.get('/api/v1/category/:categoryId/courses', getCoursesByCategory);
 
 //def route
+app.get("/api/test", (req, res) => {
+    res.json({
+      message: "Test API is working!"
+    });
+});
 
 app.get("/" , (req,res)=>{
     return res.json({
