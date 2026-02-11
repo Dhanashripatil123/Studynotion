@@ -13,8 +13,9 @@
 // }
 
 import axios from "axios";
+const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
 
-export const axiosInstance = axios.create({ withCredentials: true });
+export const axiosInstance = axios.create({baseURL: BASE_URL, withCredentials: true });
 
 export const apiConnector = async (method, url, bodyData = null, headers = null, params ) => {
     try {
