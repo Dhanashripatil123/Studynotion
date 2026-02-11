@@ -13,35 +13,36 @@
 // }
 
 import axios from "axios";
-const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
 
-export const axiosInstance = axios.create({baseURL: BASE_URL, withCredentials: true });
+// Axios instance (NO baseURL)
+export const axiosInstance = axios.create({
+  withCredentials: true,
+});
 
-export const apiConnector = async (method, url, bodyData = null, headers = null, params ) => {
-    try {
-        const response = await axiosInstance({
-            method: method,
-            url: url,
-            data: bodyData,
-            headers: headers,
-            params: params,
-        });
+export const apiConnector = async (
+  method,
+  url,
+  bodyData = null,
+  headers = {},
+  params = null
+) => {
+  try {
+    const response = await axiosInstance({
+      method,
+      url, // FULL URL comes from apis.jsx
+      data: bodyData,
+      headers,
+      params,
+    });
 
-        console.log("API SUCCESS:", response.data);
-        // Return the response payload directly so callers receive { success, message, data }
-        return response.data;
-    } catch (error) {
-        const errorMessage = error?.response?.data?.message || error.message;
-        const statusCode = error?.response?.status;
-
-        console.error(" API ERROR:", {
-            status: statusCode,
-            message: errorMessage,
-            fullError: error?.response?.data,
-        });
-        // Throw the original error so callers can inspect error.response
-        throw error;
-    }
+    return response.data;
+  } catch (error) {
+    console.error(
+      "API ERROR:",
+      error?.response?.data || error.message
+    );
+    throw error;
+  }
 };
 
 

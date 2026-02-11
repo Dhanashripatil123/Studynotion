@@ -1,5 +1,5 @@
 // src/services/apis.jsx
-const BASE_URL = import.meta.env.VITE_BASE_URL || "https://studynotion-kqfz.onrender.com/api/v1";
+const BASE_URL = "https://studynotion-kqfz.onrender.com/api/v1";
 console.log(BASE_URL);
 
 // Auth APIs
@@ -23,7 +23,7 @@ export const catalogData = {
 
 export const altCategory = {
   // alternate public route added on server: GET /api/category/:categoryId/courses
-  COURSES_BY_CATEGORY: BASE_URL + '/category',
+  COURSES_BY_CATEGORY: "https://studynotion-kqfz.onrender.com/api/v1/category",
 }
 
 
