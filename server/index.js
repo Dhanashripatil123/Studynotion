@@ -81,11 +81,6 @@ app.get('/api/category/:categoryId/courses', getCoursesByCategory);
 app.get('/api/v1/category/:categoryId/courses', getCoursesByCategory);
 
 //def route
-app.get("/api/test", (req, res) => {
-    res.json({
-      message: "Test API is working!"
-    });
-});
 
 app.get("/" , (req,res)=>{
     return res.json({
