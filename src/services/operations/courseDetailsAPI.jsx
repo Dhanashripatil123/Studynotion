@@ -101,14 +101,16 @@ export const fetchCourseDetails = async (courseId, showLoading = true) => {
         console.log("COURSE_DETAILS_API API RESPONSE...........", response);
 
         if (!response?.success) {
-            throw new Error(response?.message);
+            console.log("API returned success: false");
+            result = response; // Still return the response even if success is false
+        } else {
+            result = response;
         }
-
-        result = response;
     } catch (error) {
         console.log("COURSE_DETAILS_API API ERROR...........", error);
-        result = error?.response?.data || null;
-        // toast.error(error.response.data.message)
+        console.log("Error response:", error?.response?.data);
+        // Return the error response if available
+        result = error?.response?.data || { success: false, message: error?.message || 'Failed to fetch course details' };
     }
 
     if (showLoading && toastId) toast.dismiss(toastId);
@@ -138,18 +140,29 @@ export const fetchFullCourseDetailsById = async (courseId, token, showToast = tr
     const toastId = showToast ? toast.loading("Loading course details...") : null;
     let result = null;
     try {
-        // Backend exposes authenticated full-course details via POST /course/getFullCourseDetails
-        // Use the same POST endpoint (with { courseId } body) to avoid 404 on GET
-        const response = await apiConnector("POST", GET_FULL_COURSE_DETAILS_AUTHENTICATED, { courseId }, token ? { Authorization: `Bearer ${token}` } : undefined);
-        console.log("FETCH FULL COURSE BY ID RESPONSE...........", response);
-        if (!response?.success) {
-            throw new Error(response?.message || 'Could not fetch course details');
+        // If user is authenticated, use getFullCourseDetails (which includes enrollment info)
+        // Otherwise, use basic getCourseDetails
+        if (token) {
+            console.log("User authenticated, fetching full course details");
+            const response = await apiConnector("POST", GET_FULL_COURSE_DETAILS_AUTHENTICATED, { courseId }, { Authorization: `Bearer ${token}` });
+            console.log("FETCH FULL COURSE BY ID RESPONSE (authenticated)...........", response);
+            result = response;
+        } else {
+            console.log("User not authenticated, fetching basic course details");
+            const response = await apiConnector("POST", COURSE_DETAILS_API, { courseId });
+            console.log("FETCH FULL COURSE BY ID RESPONSE (non-authenticated)...........", response);
+            result = response;
         }
-        // normalize structure: controller returns details in response
-        result = response;
+
+        if (!result?.success) {
+            console.log("Response success is false");
+        }
+
     } catch (error) {
         console.error("FETCH FULL COURSE BY ID ERROR...........", error);
-        result = error?.response?.data || null;
+        console.log("Error response data:", error?.response?.data);
+        // Return the error response if available, otherwise create a default error response
+        result = error?.response?.data || { success: false, message: error?.message || 'Failed to fetch course details', data: null };
     }
     if (toastId) toast.dismiss(toastId);
     return result;

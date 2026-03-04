@@ -1,5 +1,4 @@
 
-
 import { toast } from "react-hot-toast";
 import { apiConnector } from "../apiconnector";
 import { endpoints } from "../apis";
@@ -17,33 +16,38 @@ const {
 } = endpoints;
 
 // 1. Send OTP
-export function sendOtp(email, navigate) {
-  
+export function sendOtp(email) {
   return async (dispatch) => {
     const toastId = toast.loading("Loading...");
     dispatch(setLoading(true));
 
     try {
-      const response = await apiConnector("POST", SENDOTP_API , {
+      const response = await apiConnector("POST", SENDOTP_API, {
         email,
         checkUserPresent: true,
       });
 
-      console.log("SENDOTP API RESPONSE.............", response);
+      console.log("SENDOTP API RESPONSE.............new otp",response);
 
       if (!response?.success) {
-        throw new Error(response?.message || "Could not send OTP");
+        // Create a custom error with the message from the server
+        const error = new Error(response?.message || "Could not send OTP");
+        error.response = { data: { message: response?.message } };
+        throw error;
       }
 
       toast.success("OTP Sent Successfully");
-      navigate("/verify-email");
+      dispatch(setLoading(false));
+      toast.dismiss(toastId);
+      return response;
     } catch (error) {
       console.log("SENDOTP API ERROR............", error);
-      toast.error("Could Not Send OTP");
+      const errorMessage = error?.response?.data?.message || error.message || "Could Not Send OTP";
+      toast.error(errorMessage);
+      dispatch(setLoading(false));
+      toast.dismiss(toastId);
+      throw error;
     }
-
-    dispatch(setLoading(false));
-    toast.dismiss(toastId);
   };
 }
 

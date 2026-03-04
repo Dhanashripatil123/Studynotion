@@ -28,9 +28,6 @@ router.post("/login",login)
 //Route for user signup
 router.post("/signup",signup)
 
-
-
-
 //Route for sending OTP to the user's email
 router.post("/sendotp",sendOTP)
 

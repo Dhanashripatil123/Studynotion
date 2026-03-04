@@ -7,63 +7,148 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 //sendOTP
-exports.sendOTP = async (req,res) => {
-      try{   
-      //fetch email from request ki body
-      const {email} = req.body;
-      
-      //check if user alredy exist
-      const checkUserPresent = await User.findOne({email});
+exports.sendOTP = async (req, res) => {
+    try {
+        console.log("\n SEND OTP REQUEST ");
+        // fetch email from request body
+        const { email } = req.body;
+        console.log("Email received:", email);
 
-      //if user already exist , then return a response
-      if(checkUserPresent){
-             return res.status(404).json({
-                  success:false,
-                  message: "User already register",                                
-             })                                     
-      }
-     
-      //generate otp
-      var otp = otpgenerator.generate(4,{
-         upperCaseAlphabets:false,
-         lowerCaseAlphabets:false,
-         specialChars:false                                          
-      }); 
-      console.log("otp generated:",otp);
+        // check if user already exists
+        const checkUserPresent = await User.findOne({ email });
 
-      //check unique otp or not
-      const result = await OTP.findOne({otp: otp});
+        // if user already exists, return a response
+        if (checkUserPresent) {
+            console.log("User already exists with email:", email);
+            return res.status(400).json({
+                success: false,
+                message: "User already registered",
+            });
+        }
 
-      while(result){
-           otp = otpgenerator(6,{
-              upperCaseAlphabets:false,
-              lowerCaseAlphabets:false,
-              specialChars:false  
-           }); 
-             result = await OTP.findOne({ otp: otp });                                      
-      }
+        console.log("User does not exist. Generating OTP...");
 
-      const otpPayload = {email,otp};
+        // generate otp (6 digits). make options explicit so the library always
+        // includes digits and never attempts to return a shorter string. the
+        // value will remain a string (not a number) so leading zeros aren’t lost.
+        let otp = otpgenerator.generate(6, {
+            digits: true,
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false,
+        });
+        console.log("OTP generated:", otp, "type", typeof otp, "length", otp.length);
 
-      //create an entry for otp
-      const otpBody = await OTP.create(otpPayload);
-      console.log(otpBody);
+        // check if otp is unique
+        let result = await OTP.findOne({ otp: otp });
 
-      //return response successful
-      res.status(200).json({
-           success:true,
-           message:'OTP Send Successfully',
-           otp,
-      })
-}
-catch(error){
-     console.log(error);
-     return res.status(500).json({
-            success:false,
-            message:error.message,
-     })
-}
-}
+        let attempts = 0;
+        const maxAttempts = 10;
+        while (result && attempts < maxAttempts) {
+            otp = otpgenerator.generate(6, {
+                digits: true,
+                upperCaseAlphabets: false,
+                lowerCaseAlphabets: false,
+                specialChars: false,
+            });
+            console.log("Regenerated OTP:", otp, "len", otp.length);
+            result = await OTP.findOne({ otp: otp });
+            attempts++;
+        }
+        console.log("Generated OTP:", otp);
+        console.log("Length:", otp.length);
+
+        if (result) {
+            console.error("Failed to generate unique OTP after", maxAttempts, "attempts");
+            return res.status(500).json({
+                success: false,
+                message: "Failed to generate OTP. Please try again.",
+            });
+        }
+
+        console.log("OTP is unique. Saving to database...");
+
+        const otpPayload = { email, otp };
+
+        // create an entry for otp
+        const otpBody = await OTP.create(otpPayload);
+        console.log("✅ OTP saved in DB:", otpBody._id);
+
+        // send email with proper error handling
+        console.log("\nSending OTP email...");
+        try {
+            const { mailSender } = require("../utils/mailSender");
+            const subject = "StudyNotion - Email Verification";
+            // Email template with OTP
+            const emailTemplate = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
+                    .container { max-width: 600px; margin: 20px auto; background-color: white; padding: 20px; border-radius: 8px; }
+                    .header { color: #333; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+                    .code-box { background-color: #f0f0f0; padding: 20px; margin: 20px 0; border-radius: 5px; text-align: center; }
+                    .otp-code { font-size: 36px; font-weight: bold; color: #0066cc; letter-spacing: 5px; }
+                    .footer { color: #666; font-size: 12px; margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">Email Verification</div>
+                    <p>Welcome to StudyNotion!</p>
+                    <p>Your verification code is:</p>
+                    <div class="code-box">
+                        <div class="otp-code">${otp}</div>
+                    </div>
+                    <p>This code will expire in 5 minutes.</p>
+                    <p>If you didn't request this code, you can safely ignore this email.</p>
+                    <div class="footer">
+                        <p>StudyNotion Team</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            `;
+
+            const info = await mailSender(email, subject, emailTemplate);
+            console.log(" Email sent unsuccessfully!");
+            console.log("Mail info:", info);
+
+            // success - only return success if email was actually sent
+            return res.status(200).json({
+                success: true,
+                message: "OTP sent to the email ddd",
+            });
+        } catch (mailErr) {
+            console.error("\n❌ Failed to send OTP email!");
+            console.error("Mail error message:", mailErr && mailErr.message ? mailErr.message : String(mailErr));
+            console.error("Full error:", mailErr);
+
+            // cleanup: remove the OTP we created since email failed
+            try {
+                await OTP.deleteOne({ _id: otpBody._id });
+                console.log("Deleted failed OTP from database");
+            } catch (delErr) {
+                console.error("Failed to delete OTP after mail error:", delErr && delErr.message ? delErr.message : delErr);
+            }
+
+            return res.status(502).json({
+                success: false,
+                message: "Failed to send OTP email. Please try again.",
+                error: mailErr && mailErr.message ? mailErr.message : String(mailErr),
+            });
+        }
+    } catch (error) {
+        console.error("\n❌ SEND OTP caught error:");
+        console.error("Error:", error && error.message ? error.message : String(error));
+        console.error("========== SEND OTP FAILED ==========\n");
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Failed to send OTP",
+        });
+    }
+};
 
 // signup
 exports.signup = async (req,res) => {
@@ -117,24 +202,19 @@ exports.signup = async (req,res) => {
           })
       }
 
-      //find most recent OTP stored for the user
-      const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1);
-      console.log(recentOtp);
+               // find most recent OTP stored for the user
+               const recentOtp = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
+               console.log("recentOtp:", recentOtp);
 
-      //validate OTP 
-      if(recentOtp.length == 0){
-         //OTP not found
-         return res.status(400).json({
-          sucess:false,
-          message:"OTP not found",
-         })
-      }else if(otp == recentOtp){
-          //Invalid OTP
-          return res.status(400).json({
-               success:false,
-               message:"Invalid otp"
-          })
-      }
+               // validate OTP
+               if (!recentOtp || recentOtp.length === 0) {
+                    return res.status(400).json({ success: false, message: "OTP not found" });
+               }
+
+               const latest = recentOtp[0];
+               if (String(otp).trim() !== String(latest.otp).trim()) {
+                    return res.status(400).json({ success: false, message: "Invalid otp" });
+               }
       
       //Hash password
           

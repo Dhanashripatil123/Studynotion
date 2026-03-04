@@ -239,10 +239,21 @@ exports.getCoursesDetails = async (req, res) => {
 exports.getCourseDetails = async (req, res) => {
       try {
             const { courseId } = req.body;
+            console.log("getCourseDetails called with courseId:", courseId, "type:", typeof courseId);
+            
             if (!courseId) {
+                  console.log("courseId is missing");
                   return res.status(400).json({ success: false, message: 'courseId is required' });
             }
 
+            // Validate if courseId is a valid MongoDB ObjectId
+            const mongoose = require('mongoose');
+            if (!mongoose.Types.ObjectId.isValid(courseId)) {
+                  console.log("Invalid courseId format:", courseId);
+                  return res.status(400).json({ success: false, message: 'Invalid courseId format' });
+            }
+
+            console.log("Searching for course with courseId:", courseId);
             const courseDetails = await Course.findById(courseId)
                   .populate({
                         path: 'instructor',
@@ -253,14 +264,17 @@ exports.getCourseDetails = async (req, res) => {
                   .lean()
                   .exec();
 
+            console.log("Course found:", !!courseDetails);
             if (!courseDetails) {
+                  console.log("Course not found for courseId:", courseId);
                   return res.status(404).json({ success: false, message: 'Course not found' });
             }
 
+            console.log("Successfully fetched course details");
             return res.status(200).json({ success: true, message: 'Course details fetched', data: courseDetails });
       } catch (error) {
             console.error('getCourseDetails error:', error && error.stack ? error.stack : error);
-            return res.status(500).json({ success: false, message: 'Failed to fetch course details' });
+            return res.status(500).json({ success: false, message: 'Failed to fetch course details', error: error.message });
       }
 };
 
@@ -269,8 +283,21 @@ exports.getFullCourseDetails = async (req, res) => {
       try {
             const userId = req.user?.id;
             const { courseId } = req.body;
-            if (!courseId) return res.status(400).json({ success: false, message: 'courseId is required' });
+            console.log("getFullCourseDetails called with courseId:", courseId, "userId:", userId);
+            
+            if (!courseId) {
+                  console.log("courseId is missing");
+                  return res.status(400).json({ success: false, message: 'courseId is required' });
+            }
 
+            // Validate if courseId is a valid MongoDB ObjectId
+            const mongoose = require('mongoose');
+            if (!mongoose.Types.ObjectId.isValid(courseId)) {
+                  console.log("Invalid courseId format:", courseId);
+                  return res.status(400).json({ success: false, message: 'Invalid courseId format' });
+            }
+
+            console.log("Searching for course with courseId:", courseId);
             const courseDetails = await Course.findById(courseId)
                   .populate({ path: 'instructor', populate: { path: 'additionalDetails' } })
                   .populate('category')
@@ -279,7 +306,11 @@ exports.getFullCourseDetails = async (req, res) => {
                   .lean()
                   .exec();
 
-            if (!courseDetails) return res.status(404).json({ success: false, message: 'Course not found' });
+            console.log("Course found:", !!courseDetails);
+            if (!courseDetails) {
+                  console.log("Course not found for courseId:", courseId);
+                  return res.status(404).json({ success: false, message: 'Course not found' });
+            }
 
             // Mark whether the requesting user is enrolled
             let isEnrolled = false;
@@ -287,10 +318,11 @@ exports.getFullCourseDetails = async (req, res) => {
                   isEnrolled = courseDetails.studentEnrolled.some(s => String(s) === String(userId));
             }
 
+            console.log("Successfully fetched full course details");
             return res.status(200).json({ success: true, message: 'Full course details fetched', data: { ...courseDetails, studentEnrolled: courseDetails.studentEnrolled || [], isEnrolled } });
       } catch (error) {
             console.error('getFullCourseDetails error:', error && error.stack ? error.stack : error);
-            return res.status(500).json({ success: false, message: 'Failed to fetch full course details' });
+            return res.status(500).json({ success: false, message: 'Failed to fetch full course details', error: error.message });
       }
 };
 
@@ -416,6 +448,7 @@ exports.getCoursesByCategory = async (req, res) => {
                                     courseId: '$_id',
                                     courseName: 1,
                                     price: 1,
+                                    description: 1,
                                     thumbnail: 1,
                                     instructorName: { $trim: { input: { $concat: ['$instructor.firstName', ' ', '$instructor.lastName'] } } },
                                     rating: { $round: ['$avgRating', 2] },
@@ -458,6 +491,7 @@ exports.getCoursesByCategory = async (req, res) => {
                               courseId: c._id,
                               courseName: c.courseName,
                               price: c.price,
+                              description: c.description || '',
                               thumbnail: c.thumbnail || '',
                               instructorName,
                               rating: 0,

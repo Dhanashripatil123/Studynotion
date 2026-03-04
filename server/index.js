@@ -15,10 +15,10 @@ const cors = require("cors")
 
 const fileuplad = require("express-fileupload")
 const os = require('os');
-const dotenv = require("dotenv");
+
+require("dotenv").config();
 
 
-dotenv.config();
 const PORT = process.env.PORT ||  4000;
 
 //database connect
@@ -36,8 +36,8 @@ const allowedOrigins = [
   "http://localhost:3002",
   "http://localhost:3003",
   "http://localhost:4173",
-  "https://studynotion-kqfz.onrender.com",
-  "https://studynotion-t3kf.onrender.com"
+  // "https://studynotion-kqfz.onrender.com",
+  // "https://studynotion-t3kf.onrender.com"
 ];
 
 app.use(

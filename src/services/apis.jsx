@@ -1,5 +1,5 @@
 // src/services/apis.jsx
-const BASE_URL = "https://studynotion-kqfz.onrender.com/api/v1";
+const BASE_URL = "http://localhost:4000/api/v1";
 console.log(BASE_URL);
 
 // Auth APIs
@@ -23,7 +23,7 @@ export const catalogData = {
 
 export const altCategory = {
   // alternate public route added on server: GET /api/category/:categoryId/courses
-  COURSES_BY_CATEGORY: "https://studynotion-kqfz.onrender.com/api/v1/category",
+  COURSES_BY_CATEGORY: BASE_URL + "/category/courses",
 }
 
 

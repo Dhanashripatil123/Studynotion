@@ -29,7 +29,12 @@ const Card = ({ course, onClick }) => {
 
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <button className="bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
+            className="bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors">
             View Course
           </button>
         </div>
@@ -127,8 +132,14 @@ const CatalogByCategory = () => {
       }
 
       setLoading(true);
+      console.log("Fetching courses for category:", resolvedId);
       // request a large pageSize so UI shows all courses for this category
       const res = await getCoursesByCategory(resolvedId, { pageSize: 1000 });
+      console.log("Courses fetched:", res);
+      console.log("Number of courses:", res?.length || 0);
+      if (res && res.length > 0) {
+        console.log("First course:", res[0]);
+      }
       setCourses(res || []);
       setLoading(false);
     };

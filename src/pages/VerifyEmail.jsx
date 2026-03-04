@@ -77,7 +77,13 @@ const VerifyEmail = () => {
           </div>
 
           <button
-            onClick={() => dispatch(sendOtp(signupData.email))}
+            onClick={async () => {
+              try {
+                await dispatch(sendOtp(signupData.email));
+              } catch (err) {
+                console.error("Resend OTP failed:", err);
+              }
+            }}
             className="mt-4 text-sm text-gray-300 hover:text-white underline"
           >
             Resend OTP

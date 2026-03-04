@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import FooterLinks2 from "../components/FooterLink2";
 import { toast } from 'react-hot-toast';
-import { fetchCourseDetails, getFullDetailsofCourse } from "../services/operations/courseDetailsAPI";
+import { fetchFullCourseDetailsById, getFullDetailsofCourse } from "../services/operations/courseDetailsAPI";
 import { useSelector, useDispatch } from "react-redux";
 import { addToCart } from "../slices/cartSlice";
 import { enrollCourse } from "../services/operations/courseDetailsAPI";
@@ -22,30 +22,53 @@ const CourseDetails = () => {
   const [enrolling, setEnrolling] = useState(false);
   const [paymentDebug, setPaymentDebug] = useState(null);
   const [showDebug, setShowDebug] = useState(false);
+  const [error, setError] = useState(null);
 
   // profileUser and token are already read above
    
 
   useEffect(() => {
     const load = async () => {
-      if (!courseId) return;
+      if (!courseId) {
+        console.log("No courseId provided");
+        return;
+      }
+      console.log("Loading course details for courseId:", courseId, "token available:", !!token);
       setLoading(true);
+      setError(null);
       let res = null;
       try {
-        if (token) {
-          // fetch extra gated fields for authenticated users
-          res = await getFullDetailsofCourse(courseId, token);
-        } else {
-          res = await fetchCourseDetails(courseId);
-        }
+        // Use fetchFullCourseDetailsById which works for both authenticated and non-authenticated users
+        console.log("Fetching course details");
+        res = await fetchFullCourseDetailsById(courseId, token, false);
+        console.log("Course details response:", res);
       } catch (err) {
         console.error('Error fetching course details', err);
       }
 
-      if (res && res.success && res.data) {
+      if (res?.success && res?.data) {
+        console.log("Course loaded successfully");
+        setCourse(res.data);
+      } else if (res?.data && !res?.success) {
+        // Sometimes data comes without success flag
+        console.log("Course data found (no success flag)");
         setCourse(res.data);
       } else {
         console.error('Failed to load course details', res);
+        console.error('Response had success:', res?.success, 'had data:', !!res?.data);
+        
+        // Set appropriate error message based on API response
+        const apiMessage = res?.message || "";
+        
+        // Check if it's an authentication error
+        if (apiMessage.toLowerCase().includes("token") || 
+            apiMessage.toLowerCase().includes("unauthorized") ||
+            apiMessage.toLowerCase().includes("not authenticated")) {
+          setError("You're not authenticated. Please login to view course details.");
+        } else {
+          // Otherwise it's a course not found error
+          setError("Course not found.");
+        }
       }
 
       setLoading(false);
@@ -70,10 +93,37 @@ const CourseDetails = () => {
   }
 
   if (!course) {
+    const isAuthError = error?.toLowerCase().includes("not authenticated");
     return (
-      <div className="p-6 font-sans text-gray-200">
-        <div>Course not found.</div>
-        <button onClick={() => navigate(-1)} className="mt-4 px-4 py-2 bg-yellow-500 text-black rounded-lg">Go back</button>
+      <div className="min-h-screen bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-gray-900/50 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-700/50 p-8 text-center">
+          <div className="text-6xl mb-4">
+            {isAuthError ? "🔐" : "⚠️"}
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-3">
+            {isAuthError ? "Authentication Required" : "Course Not Found"}
+          </h1>
+          <p className="text-gray-300 mb-6">
+            {error || "Course not found."}
+          </p>
+          {isAuthError && (
+            <div className="mb-6">
+              <p className="text-sm text-gray-400 mb-4">Please log in to access course details</p>
+              <button 
+                onClick={() => navigate('/login')}
+                className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg mb-3"
+              >
+                Go to Login
+              </button>
+            </div>
+          )}
+          <button 
+            onClick={() => navigate(-1)}
+            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }

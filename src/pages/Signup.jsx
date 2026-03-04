@@ -5,6 +5,7 @@ import { sendOtp } from "../services/operations/authAPI";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setSignupData } from "../slices/authSlice";
+import UserAlreadyRegisteredModal from "../components/common/UserAlreadyRegisteredModal";
 
 const tabsName = ["Signup", "Login"];
 
@@ -15,6 +16,8 @@ const Signup = () => {
    const [showPassword, setShowPassword] = useState(false);
    const [showConfirm, setShowConfirm] = useState(false);
    const [error, setError] = useState("");
+   const [showAlreadyRegisteredModal, setShowAlreadyRegisteredModal] = useState(false);
+   const [registeredEmail, setRegisteredEmail] = useState("");
    const [formData, setFormData] = useState({
       firstName: "",
       lastName: "",
@@ -34,7 +37,7 @@ const Signup = () => {
       }));
    };
 
-   const handleSignup = (e) => {
+   const handleSignup = async (e) => {
       e.preventDefault();
 
       if (password !== confirmPassword) {
@@ -54,12 +57,31 @@ const Signup = () => {
       console.log(signupPayload);
       
       dispatch(setSignupData(signupPayload));
-      dispatch(sendOtp(email));
-      navigate("/verify-email");
+      try {
+         await dispatch(sendOtp(email));
+         navigate("/verify-email");
+      } catch (err) {
+         console.error("sendOtp failed:", err);
+         
+         // Check if user is already registered
+         const errorMessage = err?.response?.data?.message || err.message || "";
+         if (errorMessage.toLowerCase().includes("user already registered") || errorMessage.toLowerCase().includes("already exists")) {
+            setRegisteredEmail(email);
+            setShowAlreadyRegisteredModal(true);
+         } else {
+            setError(errorMessage || "An error occurred during signup");
+         }
+         // toast handled in thunk; keep user on the page
+      }
    };
 
    return (
       <div className="min-h-screen bg-gradient-to-br from-[#0f0f23] via-[#1a1a2e] to-[#16213e] flex items-center justify-center px-4 py-12">
+         <UserAlreadyRegisteredModal 
+            isOpen={showAlreadyRegisteredModal}
+            onClose={() => setShowAlreadyRegisteredModal(false)}
+            email={registeredEmail}
+         />
          <div className="max-w-6xl w-full bg-gray-900/50 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-700/50 overflow-hidden">
             <div className="flex flex-col lg:flex-row">
                {/* Left Section - Form */}
