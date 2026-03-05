@@ -75,7 +75,11 @@ exports.sendOTP = async (req, res) => {
         console.log("✅ OTP saved in DB:", otpBody._id);
 
         // send email with proper error handling
-        console.log("\nSending OTP email...");
+        console.log("\nSending OTP email... (debugging mail configuration)");
+        console.log("MAIL_HOST:", process.env.MAIL_HOST);
+        console.log("MAIL_PORT:", process.env.MAIL_PORT);
+        console.log("MAIL_SERVICE:", process.env.MAIL_SERVICE);
+        console.log("MAIL_USER SET?", !!process.env.MAIL_USER);
         try {
             const { mailSender } = require("../utils/mailSender");
             const subject = "StudyNotion - Email Verification";
@@ -138,8 +142,7 @@ exports.sendOTP = async (req, res) => {
                 message: "Failed to send OTP email. Please try again.",
                 error: mailErr && mailErr.message ? mailErr.message : String(mailErr),
             });
-        }
-    } catch (error) {
+        }    } catch (error) {
         console.error("\n❌ SEND OTP caught error:");
         console.error("Error:", error && error.message ? error.message : String(error));
         console.error("========== SEND OTP FAILED ==========\n");

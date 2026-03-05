@@ -1,5 +1,5 @@
 // src/services/apis.jsx
-const BASE_URL = "http://localhost:4000/api/v1";
+const BASE_URL = "https://studynotion-backend1-hguz.onrender.com/api/v1";
 console.log(BASE_URL);
 
 // Auth APIs

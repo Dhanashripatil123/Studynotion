@@ -1,6 +1,9 @@
 const nodemailer = require('nodemailer');
 
 let cachedTransporter = null;
+// default connection timeout in milliseconds (can be overridden with env var)
+const CONNECTION_TIMEOUT = process.env.MAIL_CONN_TIMEOUT ? parseInt(process.env.MAIL_CONN_TIMEOUT, 10) : 10000;
+
 async function createTransporter() {
     if (cachedTransporter) return cachedTransporter;
 
@@ -18,6 +21,8 @@ async function createTransporter() {
             port: 456,
             secure: true,
             auth: { user: testAccount.user, pass: testAccount.pass },
+            connectionTimeout: CONNECTION_TIMEOUT,
+            socketTimeout: CONNECTION_TIMEOUT,
         };
         console.log('⚠️ Ethereal account created:', testAccount.user);
     } else if (process.env.MAIL_SERVICE) {
@@ -27,6 +32,8 @@ async function createTransporter() {
                 user: process.env.MAIL_USER,
                 pass: process.env.MAIL_PASS,
             },
+            connectionTimeout: CONNECTION_TIMEOUT,
+            socketTimeout: CONNECTION_TIMEOUT,
         };
         console.log('Using service:', process.env.MAIL_SERVICE);
     } else {
@@ -38,13 +45,21 @@ async function createTransporter() {
                 user: process.env.MAIL_USER,
                 pass: process.env.MAIL_PASS,
             },
+            connectionTimeout: CONNECTION_TIMEOUT,
+            socketTimeout: CONNECTION_TIMEOUT,
         };
         console.log('Using host/port config');
     }
 
+    console.log('Mail transporter config:', config.host || config.service, config.port || 'N/A');
     const transporter = nodemailer.createTransport(config);
-    await transporter.verify();
-    console.log('✅ Mail transporter verified');
+    try {
+        await transporter.verify();
+        console.log('✅ Mail transporter verified');
+    } catch (verifyErr) {
+        console.error('Transporter verification failed:', verifyErr && verifyErr.message ? verifyErr.message : verifyErr);
+        throw verifyErr;
+    }
     cachedTransporter = transporter;
     return transporter;
 }

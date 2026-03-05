@@ -44,10 +44,12 @@ function ReviewSlider() {
                 const fetchAllReviews = async()=>{
                      try{
                         const response = await apiConnector("GET", ratingEndpoints.GET_ALL_RATINGS);
-                        console.log('loggging response in rating ', response);
-                        if (response?.success) {
+                        // stringify so that object structure doesn't collapse in console
+                        console.log('logging response in rating:', JSON.stringify(response, null, 2));
+                        if (response && response.success) {
                             setReviews(response.data || []);
                         } else {
+                            // if API returned success:false we still clear reviews
                             setReviews([]);
                         }
                      }catch(err){
