@@ -36,7 +36,7 @@ const allowedOrigins = [
   "http://localhost:3002",
   "http://localhost:3003",
   "http://localhost:4173",
-  "https://studynotion-t3kf.onrender.com/api/v1",
+  "https://studynotion-t3kf.onrender.com",
   
 ];
 
