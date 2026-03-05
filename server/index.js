@@ -36,7 +36,7 @@ const allowedOrigins = [
   "http://localhost:3002",
   "http://localhost:3003",
   "http://localhost:4173",
-//  "https://studynotion-backend1-hguz.onrender.com/api/v1",
+
   
 ];
 
@@ -51,6 +51,8 @@ app.use(
       }
     },
     credentials: true,
+     origin: true,
+   
   })
 );
 
