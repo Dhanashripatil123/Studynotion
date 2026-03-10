@@ -1,0 +1,32 @@
+[33m3afb0720[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix send mail issues
+[33m2011e129[m redeploy
+[33mf58500cb[m redeploy
+[33m175c8263[m redeploy
+[33m26f9a0a7[m Fixed core
+[33mb8226fc7[m Fixed core
+[33mfc67c8db[m Fixed wrong path for deployment
+[33mcebb3c2a[m Fixed OTP generation and email sending configuration
+[33mf6d0e7e7[m Fixed OTP generation and email sending configuration
+[33m752703dc[m Fixed OTP generation and email sending configuration
+[33mdcbbc711[m Fix axios config for Render production
+[33m9b25f0d1[m Fix frontend API base URL for Render backend
+[33mb6a32aca[m Fix CORS for frontend
+[33m3fbec3db[m Fix Vite base path and proxy for Render
+[33m4b9e5b96[m Fix Vite base path for Render
+[33md98a796f[m add api test route
+[33m5b6e54c5[m now solve problem
+[33mc4f850ac[m resolve merge confilct
+[33m7e8a3949[m Fix Server vs server case issue
+[33mf76c0dac[m fix github duplicate server folder issue
+[33mf2a16cf2[m Final cleanup: Remove all backup .env files
+[33m9b1e370b[m Remove .env files and .history folders from git tracking
+[33m6cddf058[m Clean up: Remove backup .env files and update gitignore
+[33m325b89c3[m new updation
+[33m774d9f3e[m add some extra pages
+[33m7f7cd3ea[m Ignore .history folder
+[33m79dc6beb[m Add files via upload
+[33m046c8fe2[m Fixed sub-repo issue and added changes
+[33mc8dfdac1[m Initial commit : added one more component
+[33m6c7c52ea[m Merge remote main into local main
+[33mb6cf4029[m This my project
+[33m47faa4f9[m Initial commit
