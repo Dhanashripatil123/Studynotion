@@ -356,8 +356,8 @@ export const getCoursesByCategory = async (categoryId, opts = {}) => {
         if (opts.page) params.push(`page=${encodeURIComponent(opts.page)}`);
         if (opts.pageSize) params.push(`pageSize=${encodeURIComponent(opts.pageSize)}`);
         const qs = params.length ? `?${params.join('&')}` : '';
-        // Prefer the shorter public route: GET /api/category/:id/courses
-        const url = `${altCategory.COURSES_BY_CATEGORY}/${categoryId}/courses${qs}`;
+        // Backend route: GET /api/v1/course/courses/category/:categoryId
+        const url = `${altCategory.COURSES_BY_CATEGORY}/${categoryId}${qs}`;
         const response = await apiConnector("GET", url);
         if (!response?.success) throw new Error('Could not fetch courses by category');
         // controller returns { success, data: [..], total, page, pageSize }

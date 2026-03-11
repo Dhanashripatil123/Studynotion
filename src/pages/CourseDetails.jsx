@@ -193,6 +193,7 @@ const CourseDetails = () => {
   const handleEnrollNow = async () => {
     // If not authenticated, use byCourse helper which will redirect to login
     if (!token) {
+      toast.error('You are not authenticated. Please login to buy this course.');
       try {
         byCourse(token, [courseId], navigate, dispatch, profileUser);
       } catch (err) {

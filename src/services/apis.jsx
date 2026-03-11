@@ -1,5 +1,9 @@
 // src/services/apis.jsx
+<<<<<<< HEAD
 const BASE_URL = "https://studynotion-backend1-hguz.onrender.com/api/v1";
+=======
+const BASE_URL = "http://localhost:3000/api/v1";
+>>>>>>> 4f9f447e (fix the basic errors)
 console.log(BASE_URL);
 
 // Auth APIs
@@ -22,8 +26,8 @@ export const catalogData = {
 
 
 export const altCategory = {
-  // alternate public route added on server: GET /api/category/:categoryId/courses
-  COURSES_BY_CATEGORY: BASE_URL + "/category/courses",
+  // alternate public route added on server: GET /api/course/courses/category/:categoryId
+  COURSES_BY_CATEGORY: BASE_URL + "/course/courses/category",
 }
 
 
