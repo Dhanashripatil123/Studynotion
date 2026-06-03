@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
+console.log("🔥 SENDGRID MAILSENDER LOADED");
 exports.mailSender = async (to, subject, html) => {
   try {
     console.log("\n========== SENDGRID DEBUG ==========");
